@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Napoli – Guida Completa</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background: #111111;
+    min-height: 100vh;
+    padding: 40px 20px;
+  }
+  h1 {
+    text-align: center;
+    color: #f0f0f0;
+    font-size: 2.4rem;
+    margin-bottom: 8px;
+    letter-spacing: 3px;
+    font-weight: 700;
+  }
+  .subtitle {
+    text-align: center;
+    color: #777;
+    margin-bottom: 16px;
+    font-size: 0.95rem;
+    letter-spacing: 1px;
+  }
+  .section-label {
+    text-align: center;
+    color: #aaa;
+    font-size: 0.78rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    margin-top: 32px;
+  }
+  .divider {
+    width: 60px;
+    height: 1px;
+    background: #444;
+    margin: 0 auto 32px auto;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .grid.food-grid {
+    max-width: 1100px;
+    margin: 0 auto;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+  .cat-btn {
+    background: #1c1c1c;
+    border: 1px solid #2e2e2e;
+    border-radius: 14px;
+    padding: 26px 18px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    color: #e0e0e0;
+  }
+  .cat-btn:hover {
+    background: #2a2a2a;
+    transform: translateY(-3px);
+    border-color: #555;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.5);
+  }
+  .cat-btn.food {
+    background: #1a1a1a;
+    border-color: #333;
+  }
+  .cat-btn.food:hover {
+    background: #252525;
+    border-color: #666;
+  }
+  .cat-btn .icon { font-size: 2.2rem; margin-bottom: 10px; filter: grayscale(1); }
+  .cat-btn:hover .icon { filter: grayscale(0); }
+  .cat-btn .label { font-size: 0.9rem; font-weight: 600; color: #ddd; }
+  .cat-btn .count { font-size: 0.75rem; color: #666; margin-top: 5px; }
+
+  /* MODAL */
+  .overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .overlay.active { display: flex; }
+  .modal {
+    background: #1a1a1a;
+    border-radius: 18px;
+    max-width: 660px;
+    width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 34px;
+    position: relative;
+    border: 1px solid #2e2e2e;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.7);
+  }
+  .modal h2 { color: #f0f0f0; font-size: 1.3rem; margin-bottom: 20px; letter-spacing: 1px; }
+  .close-btn {
+    position: absolute; top: 16px; right: 20px;
+    background: none; border: none;
+    color: #666; font-size: 1.4rem;
+    cursor: pointer; line-height: 1;
+    transition: color 0.2s;
+  }
+  .close-btn:hover { color: #fff; }
+
+  .place-item {
+    background: #222;
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    border: 1px solid #2e2e2e;
+    transition: border-color 0.2s;
+  }
+  .place-item:hover { border-color: #555; }
+  .place-name { color: #ddd; font-size: 0.9rem; font-weight: 600; }
+  .place-desc { color: #777; font-size: 0.78rem; margin-top: 3px; }
+  .place-extra { color: #999; font-size: 0.75rem; margin-top: 3px; font-style: italic; }
+
+  .maps-btn {
+    background: #333;
+    color: #ccc;
+    border: 1px solid #444;
+    border-radius: 7px;
+    padding: 7px 12px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    white-space: nowrap;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+  .maps-btn:hover {
+    background: #555;
+    color: #fff;
+    border-color: #777;
+  }
+
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: #111; }
+  ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<h1>NAPOLI</h1>
+<p class="subtitle">La tua guida completa alla città</p>
+
+<div class="section-label">— Cosa vedere —</div>
+<div class="grid">
+  <div class="cat-btn" onclick="openModal('chiese')">
+    <div class="icon">⛪</div>
+    <div class="label">Chiese & Religiosi</div>
+    <div class="count">7 luoghi</div>
+  </div>
+  <div class="cat-btn" onclick="openModal('castelli')">
+    <div class="icon">🏰</div>
+    <div class="label">Castelli</div>
+    <div class="count">3 luoghi</div>
+  </div>
+  <div class="cat-btn" onclick="openModal('musei')">
+    <div class="icon">🎨</div>
+    <div class="label">Musei</div>
+    <div class="count">4 luoghi</div>
+  </div>
+  <div class="cat-btn" onclick="openModal('piazze')">
+    <div class="icon">🏛️</div>
+    <div class="label">Piazze & Architettura</div>
+    <div class="count">5 luoghi</div>
+  </div>
+  <div class="cat-btn" onclick="openModal('quartieri')">
+    <div class="icon">🛤️</div>
+    <div class="label">Strade & Quartieri</div>
+    <div class="count">7 luoghi</div>
+  </div>
+  <div class="cat-btn" onclick="openModal('sotterranea')">
+    <div class="icon">🕳️</div>
+    <div class="label">Napoli Nascosta</div>
+    <div class="count">4 luoghi</div>
+  </div>
+  <div class="cat-btn" onclick="openModal('parchi')">
+    <div class="icon">🌿</div>
+    <div class="label">Parchi & Verde</div>
+    <div class="count">3 luoghi</div>
+  </div>
+  <div class="cat-btn" onclick="openModal('gite')">
+    <div class="icon">🌋</div>
+    <div class="label">Gite Fuori Porta</div>
+    <div class="count">7 mete</div>
+  </div>
+</div>
+
+<div class="section-label">— Cosa mangiare —</div>
+<div class="divider"></div>
+<div class="grid food-grid">
+  <div class="cat-btn food" onclick="openModal('pizza')">
+    <div class="icon">🍕</div>
+    <div class="label">Pizza Napoletana</div>
+    <div class="count">3 locali</div>
+  </div>
+  <div class="cat-btn food" onclick="openModal('fritti')">
+    <div class="icon">🍟</div>
+    <div class="label">Fritti & Street Food</div>
+    <div class="count">4 locali</div>
+  </div>
+  <div class="cat-btn food" onclick="openModal('pizzafritta')">
+    <div class="icon">🫓</div>
+    <div class="label">Pizza Fritta</div>
+    <div class="count">3 locali</div>
+  </div>
+  <div class="cat-btn food" onclick="openModal('trattorie')">
+    <div class="icon">🍝</div>
+    <div class="label">Piatti Tipici</div>
+    <div class="count">4 piatti + locali</div>
+  </div>
+  <div class="cat-btn food" onclick="openModal('dolci')">
+    <div class="icon">🍮</div>
+    <div class="label">Dolci & Caffè</div>
+    <div class="count">5 specialità</div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="overlay" id="overlay" onclick="closeOnOverlay(event)">
+  <div class="modal" id="modal">
+    <button class="close-btn" onclick="closeModal()">✕</button>
+    <h2 id="modal-title"></h2>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<script>
+const data = {
+  chiese: {
+    title: "⛪ Chiese & Complessi Religiosi",
+    places: [
+      { name: "Cappella Sansevero – Cristo Velato", desc: "Una delle sculture più straordinarie al mondo", maps: "https://maps.google.com/?q=Cappella+Sansevero+Napoli" },
+      { name: "Duomo di Napoli", desc: "Cattedrale del XIII sec. con la Cappella di San Gennaro", maps: "https://maps.google.com/?q=Duomo+di+Napoli" },
+      { name: "Complesso di Santa Chiara", desc: "Chiostro maiolicato, chiesa e museo trecentesco", maps: "https://maps.google.com/?q=Complesso+Santa+Chiara+Napoli" },
+      { name: "San Domenico Maggiore", desc: "Una delle chiese gotiche più belle del centro", maps: "https://maps.google.com/?q=San+Domenico+Maggiore+Napoli" },
+      { name: "Certosa di San Martino", desc: "Monastero barocco con vista panoramica sul golfo", maps: "https://maps.google.com/?q=Certosa+San+Martino+Napoli" },
+      { name: "Catacombe di San Gennaro", desc: "Catacombe paleocristiane nel Rione Sanità", maps: "https://maps.google.com/?q=Catacombe+San+Gennaro+Napoli" },
+      { name: "Chiesa del Gesù Nuovo", desc: "Facciata bugnata unica, interno barocco sontuoso", maps: "https://maps.google.com/?q=Chiesa+Gesù+Nuovo+Napoli" },
+    ]
+  },
+  castelli: {
+    title: "🏰 Castelli & Fortificazioni",
+    places: [
+      { name: "Castel dell'Ovo", desc: "Sul lungomare, ingresso gratuito, vista sul golfo", maps: "https://maps.google.com/?q=Castel+dell'Ovo+Napoli" },
+      { name: "Castel Nuovo – Maschio Angioino", desc: "Castello angioino nel cuore del porto", maps: "https://maps.google.com/?q=Castel+Nuovo+Napoli" },
+      { name: "Castel Sant'Elmo", desc: "Fortezza stellata sul Vomero, panorama a 360°", maps: "https://maps.google.com/?q=Castel+Sant'Elmo+Napoli" },
+    ]
+  },
+  musei: {
+    title: "🎨 Musei",
+    places: [
+      { name: "Museo Archeologico Nazionale (MANN)", desc: "Reperti di Pompei, collezione Farnese, Gabinetto Segreto", maps: "https://maps.google.com/?q=Museo+Archeologico+Nazionale+Napoli" },
+      { name: "Real Bosco e Museo di Capodimonte", desc: "Raffaello, Tiziano, Caravaggio – immersi nel parco", maps: "https://maps.google.com/?q=Museo+Capodimonte+Napoli" },
+      { name: "Certosa e Museo di San Martino", desc: "Arte napoletana dal '500 al '900 con vista sul golfo", maps: "https://maps.google.com/?q=Museo+San+Martino+Napoli" },
+      { name: "Palazzo Reale di Napoli", desc: "Appartamenti reali borbonici con arazzi e dipinti", maps: "https://maps.google.com/?q=Palazzo+Reale+Napoli" },
+    ]
+  },
+  piazze: {
+    title: "🏛️ Piazze, Palazzi & Architettura",
+    places: [
+      { name: "Piazza del Plebiscito", desc: "Cuore monumentale della città", maps: "https://maps.google.com/?q=Piazza+del+Plebiscito+Napoli" },
+      { name: "Palazzo Reale", desc: "Residenza borbonica del XVII secolo", maps: "https://maps.google.com/?q=Palazzo+Reale+Napoli" },
+      { name: "Teatro San Carlo", desc: "Uno dei teatri d'opera più antichi al mondo", maps: "https://maps.google.com/?q=Teatro+San+Carlo+Napoli" },
+      { name: "Galleria Umberto I", desc: "Galleria liberty fine '800, simile a quella di Milano", maps: "https://maps.google.com/?q=Galleria+Umberto+I+Napoli" },
+      { name: "Quartieri Spagnoli", desc: "Quartiere storico denso e autentico", maps: "https://maps.google.com/?q=Quartieri+Spagnoli+Napoli" },
+    ]
+  },
+  quartieri: {
+    title: "🛤️ Strade & Quartieri Storici",
+    places: [
+      { name: "Spaccanapoli", desc: "Il decumano che taglia in due la città", maps: "https://maps.google.com/?q=Spaccanapoli+Napoli" },
+      { name: "Via dei Tribunali", desc: "Asse del centro storico, pizza e chiese a ogni passo", maps: "https://maps.google.com/?q=Via+dei+Tribunali+Napoli" },
+      { name: "Via San Gregorio Armeno", desc: "La celebre strada dei presepi artigianali", maps: "https://maps.google.com/?q=Via+San+Gregorio+Armeno+Napoli" },
+      { name: "Rione Sanità", desc: "Quartiere autentico e in forte rinascita culturale", maps: "https://maps.google.com/?q=Rione+Sanità+Napoli" },
+      { name: "Posillipo", desc: "Collina panoramica sul mare con ville e parchi", maps: "https://maps.google.com/?q=Posillipo+Napoli" },
+      { name: "Vomero", desc: "Quartiere collinare elegante, da raggiungere in funicolare", maps: "https://maps.google.com/?q=Vomero+Napoli" },
+      { name: "Lungomare Caracciolo", desc: "La passeggiata sul mare più bella di Napoli", maps: "https://maps.google.com/?q=Lungomare+Caracciolo+Napoli" },
+    ]
+  },
+  sotterranea: {
+    title: "🕳️ Napoli Nascosta & Sotterranea",
+    places: [
+      { name: "Napoli Sotterranea", desc: "Cunicoli greco-romani sotto la città, tour guidati", maps: "https://maps.google.com/?q=Napoli+Sotterranea" },
+      { name: "Galleria Borbonica", desc: "Tunnel borbonici con storie di guerra e misteri", maps: "https://maps.google.com/?q=Galleria+Borbonica+Napoli" },
+      { name: "Catacombe di San Gennaro", desc: "Catacombe paleocristiane nel Rione Sanità", maps: "https://maps.google.com/?q=Catacombe+San+Gennaro+Napoli" },
+      { name: "Parco Archeologico del Pausilypon", desc: "Villa romana con teatro antico affacciato sul mare", maps: "https://maps.google.com/?q=Pausilypon+Napoli" },
+    ]
+  },
+  parchi: {
+    title: "🌿 Parchi & Verde",
+    places: [
+      { name: "Real Bosco di Capodimonte", desc: "Parco storico di 134 ettari attorno al museo", maps: "https://maps.google.com/?q=Bosco+Capodimonte+Napoli" },
+      { name: "Villa Comunale", desc: "Parco ottocentesco sul Lungomare", maps: "https://maps.google.com/?q=Villa+Comunale+Napoli" },
+      { name: "Orto Botanico di Napoli", desc: "Uno dei più grandi e storici d'Italia", maps: "https://maps.google.com/?q=Orto+Botanico+Napoli" },
+    ]
+  },
+  gite: {
+    title: "🌋 Gite Fuori Porta",
+    places: [
+      { name: "Pompei", desc: "Sito UNESCO – città sepolta dal Vesuvio nel 79 d.C.", maps: "https://maps.google.com/?q=Scavi+di+Pompei" },
+      { name: "Ercolano", desc: "Meglio conservata di Pompei, meno affollata", maps: "https://maps.google.com/?q=Scavi+Ercolano" },
+      { name: "Vesuvio", desc: "Escursione al cratere del vulcano attivo", maps: "https://maps.google.com/?q=Vesuvio+Napoli" },
+      { name: "Reggia di Caserta", desc: "Una delle regge più grandi d'Europa, ~30 min", maps: "https://maps.google.com/?q=Reggia+di+Caserta" },
+      { name: "Isola di Capri", desc: "Grotta Azzurra, villa Jovis, panorami mozzafiato", maps: "https://maps.google.com/?q=Isola+di+Capri" },
+      { name: "Costiera Amalfitana", desc: "Positano, Amalfi, Ravello – patrimonio UNESCO", maps: "https://maps.google.com/?q=Costiera+Amalfitana" },
+      { name: "Ischia e Procida", desc: "Isole nel golfo di Napoli, termali e colorate", maps: "https://maps.google.com/?q=Ischia+Napoli" },
+    ]
+  },
+
+  // CIBO
+  pizza: {
+    title: "🍕 Pizza Napoletana – Dove Mangiarla",
+    places: [
+      { name: "L'Antica Pizzeria Da Michele", desc: "Solo margherita e marinara – il tempio della pizza napoletana", extra: "Via Cesare Sersale, 1 · €1-10", maps: "https://maps.google.com/?q=L'Antica+Pizzeria+Da+Michele+Napoli" },
+      { name: "Antica Pizzeria Di Matteo", desc: "Storica pizzeria nel cuore di Via dei Tribunali", extra: "Via dei Tribunali, 94 · €10-20", maps: "https://maps.google.com/?q=Antica+Pizzeria+Di+Matteo+Napoli" },
+      { name: "Pizzeria e Trattoria del Purgatorio", desc: "Pizza eccellente + piatti della tradizione napoletana", extra: "Via dei Tribunali, 351 · €10-20", maps: "https://maps.google.com/?q=Trattoria+del+Purgatorio+Napoli" },
+    ]
+  },
+  fritti: {
+    title: "🍟 Fritti & Street Food",
+    places: [
+      { name: "Friggitoria Vomero", desc: "Cuoppo di fritti, frittatina di pasta, crocchè – locale storico", extra: "Via Domenico Cimarosa, 44 · €1-10", maps: "https://maps.google.com/?q=Friggitoria+Vomero+Napoli" },
+      { name: "Friggitoria Napoletana da Rosetta", desc: "Fritti misti, pizza fritta e montanara nel centro antico", extra: "Via San Biagio dei Librai, 80 · €1-10", maps: "https://maps.google.com/?q=Friggitoria+da+Rosetta+Napoli" },
+      { name: "Cuoppo di fritti", desc: "Da assaggiare passeggiando per Via dei Tribunali o Spaccanapoli", extra: "Street food tipico · da €2", maps: "https://maps.google.com/?q=Via+dei+Tribunali+Napoli" },
+      { name: "Frittatina di pasta e crocchè", desc: "I fritti iconici della tradizione partenopea", extra: "In qualsiasi friggitoria del centro storico", maps: "https://maps.google.com/?q=Spaccanapoli+Napoli" },
+    ]
+  },
+  pizzafritta: {
+    title: "🫓 Pizza Fritta – Dove Mangiarla",
+    places: [
+      { name: "Pizzeria De' Figliole", desc: "Storica pizzeria specializzata solo in pizza fritta, gestione familiare", extra: "Via Giudecca Vecchia, 39 · €1-10", maps: "https://maps.google.com/?q=Pizzeria+De'+Figliole+Napoli" },
+      { name: "1947 Pizza Fritta Napoli", desc: "Numerose versioni di pizza fritta, tra le più apprezzate in città", extra: "Via Pietro Colletta, 29/31 · €10-20", maps: "https://maps.google.com/?q=1947+Pizza+Fritta+Napoli" },
+      { name: "Friggitoria Napoletana da Rosetta", desc: "Pizza fritta completa, montanara con polpette", extra: "Via San Biagio dei Librai, 80 · €1-10", maps: "https://maps.google.com/?q=Friggitoria+da+Rosetta+Napoli" },
+    ]
+  },
+  trattorie: {
+    title: "🍝 Piatti Tipici della Cucina Napoletana",
+    places: [
+      { name: "Pasta e Patate con Provola", desc: "Piatto povero e ricco allo stesso tempo, cremoso e saporito", extra: "Da provare alla Trattoria del Purgatorio", maps: "https://maps.google.com/?q=Trattoria+del+Purgatorio+Napoli" },
+      { name: "Ziti alla Genovese", desc: "Ragù bianco di cipolle cotto lentamente – piatto tipico napoletano", extra: "Via dei Tribunali, 351", maps: "https://maps.google.com/?q=Trattoria+del+Purgatorio+Napoli" },
+      { name: "Gnocchi alla Sorrentina", desc: "Gnocchi al pomodoro, mozzarella e basilico, gratinati al forno", extra: "In qualsiasi trattoria tradizionale del centro", maps: "https://maps.google.com/?q=ristoranti+tipici+Napoli" },
+      { name: "Ragù napoletano", desc: "Sugo di carne cotto per ore – il più antico e famoso d'Italia", extra: "Da provare la domenica nelle trattorie del centro", maps: "https://maps.google.com/?q=trattorie+napoletane+centro+storico" },
+    ]
+  },
+  dolci: {
+    title: "🍮 Dolci & Caffè Napoletano",
+    places: [
+      { name: "Sfogliatella (riccia o frolla)", desc: "Il dolce simbolo di Napoli – da mangiare calda", extra: "Pintauro, Via Toledo 275 – storica pasticceria", maps: "https://maps.google.com/?q=Pintauro+Napoli" },
+      { name: "Babà al rum", desc: "L'altro dolce iconico napoletano, soffice e inzuppato", extra: "In qualsiasi pasticceria del centro", maps: "https://maps.google.com/?q=pasticceria+napoletana+centro" },
+      { name: "Pastiera napoletana", desc: "Torta di grano e ricotta, tipica della Pasqua ma presente tutto l'anno", extra: "Pasticceria Capparelli, Via dei Tribunali 327", maps: "https://maps.google.com/?q=Pasticceria+Capparelli+Napoli" },
+      { name: "Caffè napoletano", desc: "Il caffè espresso più famoso d'Italia – rigorosamente al banco", extra: "Gran Caffè Gambrinus, Piazza Trieste e Trento", maps: "https://maps.google.com/?q=Gran+Caffè+Gambrinus+Napoli" },
+      { name: "Struffoli e Roccocò", desc: "Dolci natalizi tipici, ma spesso reperibili tutto l'anno", extra: "Nelle pasticcerie artigianali del centro storico", maps: "https://maps.google.com/?q=pasticcerie+artigianali+Napoli" },
+    ]
+  }
+};
+
+function openModal(key) {
+  const cat = data[key];
+  document.getElementById('modal-title').textContent = cat.title;
+  let html = '';
+  cat.places.forEach(p => {
+    const extra = p.extra ? `<div class="place-extra">${p.extra}</div>` : '';
+    html += `<div class="place-item">
+      <div>
+        <div class="place-name">${p.name}</div>
+        <div class="place-desc">${p.desc}</div>
+        ${extra}
+      </div>
+      <a class="maps-btn" href="${p.maps}" target="_blank">📍 Maps</a>
+    </div>`;
+  });
+  document.getElementById('modal-body').innerHTML = html;
+  document.getElementById('overlay').classList.add('active');
+}
+
+function closeModal() {
+  document.getElementById('overlay').classList.remove('active');
+}
+
+function closeOnOverlay(e) {
+  if (e.target === document.getElementById('overlay')) closeModal();
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+</script>
+</body>
+</html>
