@@ -1,0 +1,113 @@
+/* ============================================================
+   Quiz di compleanno — stile condiviso (pagina ospite + admin)
+   ============================================================ */
+
+:root {
+  --bg: #1b0f2e;
+  --bg-deep: #130a22;
+  --card: #2a1743;
+  --card-soft: #33205a;
+  --line: rgba(255, 255, 255, 0.10);
+  --accent: #ff5d8f;
+  --accent-dark: #e0447a;
+  --gold: #ffd166;
+  --mint: #6ee7c8;
+  --text: #fdf6f0;
+  --text-dim: #c7b8de;
+  --danger: #ff6b6b;
+  --radius: 18px;
+  --shadow: 0 18px 40px -18px rgba(0, 0, 0, 0.6);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  background:
+    radial-gradient(1100px 620px at 12% -8%, rgba(255, 93, 143, 0.28), transparent 60%),
+    radial-gradient(900px 560px at 110% 10%, rgba(255, 209, 102, 0.18), transparent 55%),
+    var(--bg);
+  color: var(--text);
+  font-family: "Manrope", -apple-system, "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, .display {
+  font-family: "Fredoka", "Manrope", sans-serif;
+  font-weight: 600;
+  text-wrap: balance;
+}
+
+a { color: var(--accent); }
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+::selection { background: var(--accent); color: #1b0f2e; }
+
+.eyebrow {
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-weight: 700;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: none;
+  border-radius: 999px;
+  padding: 14px 28px;
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: "Fredoka", sans-serif;
+  letter-spacing: 0.01em;
+  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+  color: #fff;
+  box-shadow: 0 12px 26px -10px rgba(255, 93, 143, 0.55);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+}
+
+.btn:active { transform: translateY(1px) scale(0.99); }
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.btn.ghost {
+  background: transparent;
+  border: 1.5px solid var(--line);
+  box-shadow: none;
+  color: var(--text);
+}
+
+.btn.gold {
+  background: linear-gradient(135deg, var(--gold), #f4a83c);
+  color: #2a1743;
+  box-shadow: 0 12px 26px -10px rgba(255, 209, 102, 0.5);
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.tabular { font-variant-numeric: tabular-nums; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+}
