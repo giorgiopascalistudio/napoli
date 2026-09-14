@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Regia Quiz — Maxischermo</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+  body { padding: 0; min-height: 100vh; overflow-x: hidden; }
+  .stage {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: clamp(18px, 3vw, 48px);
+  }
+  .stage-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .brand h1 { margin: 0; font-size: clamp(1.3rem, 3vw, 1.8rem); }
+  .brand .eyebrow { display: block; margin-bottom: 2px; }
+  .controls { display: flex; gap: 10px; flex-wrap: wrap; }
+
+  .screen { display: none; flex: 1; }
+  .screen.active { display: flex; flex-direction: column; }
+
+  /* --- PRE-GAME --- */
+  #screen-pre { align-items: center; justify-content: center; gap: 36px; text-align: center; }
+  .pre-grid {
+    display: flex;
+    gap: 40px;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .qr-box {
+    background: #fff;
+    padding: 18px;
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+    display: inline-flex;
+  }
+  .pre-info { max-width: 420px; text-align: left; }
+  .pre-info h2 { font-size: clamp(1.6rem, 4vw, 2.4rem); margin: 8px 0 12px; }
+  .pre-info p { color: var(--text-dim); line-height: 1.55; margin: 0 0 18px; }
+  .link-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    background: var(--card-soft);
+    border-radius: 12px;
+    padding: 10px 12px;
+    margin-bottom: 22px;
+  }
+  .link-row code { color: var(--gold); font-size: 0.85rem; overflow-wrap: anywhere; flex: 1; }
+  .joined-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--card-soft);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 10px 20px;
+    font-family: "Fredoka", sans-serif;
+    font-weight: 700;
+    font-size: 1.2rem;
+    margin-bottom: 18px;
+  }
+  .joined-names {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    max-width: 480px;
+    margin-bottom: 22px;
+  }
+  .name-chip {
+    background: var(--card-soft);
+    border-radius: 999px;
+    padding: 6px 14px;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+  }
+
+  /* --- IN CORSO --- */
+  #screen-live { gap: 26px; }
+  .live-head { text-align: center; }
+  .big-timer {
+    font-family: "Fredoka", sans-serif;
+    font-weight: 700;
+    font-size: clamp(3.5rem, 12vw, 7rem);
+    line-height: 1;
+    letter-spacing: 0.02em;
+  }
+  .big-timer.low { color: var(--danger); animation: pulse 1s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+  .live-sub { color: var(--text-dim); margin-top: 6px; }
+
+  .board {
+    flex: 1;
+    display: grid;
+    gap: 10px;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    align-content: start;
+  }
+  .row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 16px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+  }
+  .row .rank {
+    flex: none;
+    width: 34px;
+    text-align: center;
+    font-family: "Fredoka", sans-serif;
+    font-weight: 700;
+    color: var(--text-dim);
+  }
+  .row.top1 .rank { color: var(--gold); }
+  .row.top2 .rank { color: #d9dbe6; }
+  .row.top3 .rank { color: #e0a672; }
+  .row .rname { flex: 1; font-weight: 700; font-family: "Fredoka", sans-serif; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .row .rstatus { font-size: 0.72rem; color: var(--text-dim); }
+  .row .rscore { font-family: "Fredoka", sans-serif; font-weight: 700; font-size: 1.1rem; color: var(--mint); }
+
+  /* --- FINALE --- */
+  #screen-final { align-items: center; justify-content: flex-start; gap: 20px; padding-top: clamp(10px, 3vh, 30px); }
+  #screen-final h2 { font-size: clamp(1.8rem, 5vw, 3rem); text-align: center; margin: 0; }
+  .podium {
+    display: flex;
+    align-items: flex-end;
+    gap: 18px;
+    justify-content: center;
+    margin: 10px 0 8px;
+    width: 100%;
+  }
+  .podium .place {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    width: min(30vw, 190px);
+  }
+  .podium .medal { font-size: 2.2rem; }
+  .podium .pname { font-family: "Fredoka", sans-serif; font-weight: 700; text-align: center; overflow-wrap: anywhere; }
+  .podium .pscore { color: var(--gold); font-weight: 700; }
+  .podium .bar {
+    width: 100%;
+    border-radius: 12px 12px 0 0;
+    background: linear-gradient(180deg, var(--card-soft), var(--card));
+    border: 1px solid var(--line);
+    border-bottom: none;
+  }
+  .podium .p1 .bar { height: 150px; background: linear-gradient(180deg, rgba(255,209,102,0.35), var(--card-soft)); }
+  .podium .p2 .bar { height: 105px; }
+  .podium .p3 .bar { height: 80px; }
+  .podium .p1 { order: 2; }
+  .podium .p2 { order: 1; }
+  .podium .p3 { order: 3; }
+
+  .rest-list { width: 100%; max-width: 640px; margin: 0 auto; display: flex; flex-direction: column; gap: 8px; }
+
+  .empty-note { color: var(--text-dim); text-align: center; padding: 30px 0; }
+</style>
+</head>
+<body>
+
+<div class="stage">
+  <div class="stage-top">
+    <div class="brand">
+      <span class="eyebrow">Quiz di compleanno</span>
+      <h1>Quanto conosci Sara? 🎂</h1>
+    </div>
+    <div class="controls">
+      <button class="btn ghost" id="resetBtn">↺ Nuova partita</button>
+    </div>
+  </div>
+
+  <!-- PRE-GAME -->
+  <section class="screen active" id="screen-pre">
+    <div class="pre-grid">
+      <div class="qr-box" id="qrBox"></div>
+      <div class="pre-info">
+        <div class="joined-pill">🙋 <span id="preCount">0</span> invitati pronti</div>
+        <h2>Inquadra il QR ed entra nel gioco</h2>
+        <div class="link-row"><code id="joinUrl">—</code></div>
+        <div class="joined-names" id="joinedNames"></div>
+        <button class="btn" id="startBtn">Inizia il gioco — 10 minuti ⏱️</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- LIVE -->
+  <section class="screen" id="screen-live">
+    <div class="live-head">
+      <div class="big-timer tabular" id="liveTimer">10:00</div>
+      <div class="live-sub"><span id="liveCount">0</span> giocatori in gara</div>
+    </div>
+    <div class="board" id="liveBoard"></div>
+  </section>
+
+  <!-- FINALE -->
+  <section class="screen" id="screen-final">
+    <h2>🏆 Classifica finale 🏆</h2>
+    <div class="podium" id="podium"></div>
+    <div class="rest-list" id="restList"></div>
+  </section>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/canvas-confetti/1.9.4/confetti.browser.js"></script>
+<script src="firebase-config.js"></script>
+<script src="admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Quiz di Compleanno — Quanto conosci Sara?</title>
+<meta name="description" content="Gioco live per il compleanno di Sara: rispondi al quiz in 10 minuti e scala la classifica!">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+  body { padding: 0 0 48px; }
+
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 14px 18px;
+    background: rgba(19, 10, 34, 0.86);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .topbar .who {
+    font-family: "Fredoka", sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--text-dim);
+  }
+  .topbar .who b { color: var(--text); }
+  .timer-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--card-soft);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 8px 16px;
+    font-family: "Fredoka", sans-serif;
+    font-weight: 600;
+    font-size: 1.05rem;
+  }
+  .timer-pill[hidden] { display: none; }
+  .timer-pill.low { background: rgba(255, 107, 107, 0.18); border-color: rgba(255, 107, 107, 0.5); color: #ffb3b3; }
+  .timer-pill .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--mint); flex: none; }
+  .timer-pill.low .dot { background: var(--danger); animation: pulse 1s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.25} }
+
+  main { max-width: 640px; margin: 0 auto; padding: 28px 18px 0; }
+
+  .hero { text-align: center; padding: 20px 6px 6px; }
+  .hero h1 { font-size: clamp(1.6rem, 6vw, 2.1rem); margin: 10px 0 8px; }
+  .hero p { color: var(--text-dim); margin: 0; line-height: 1.5; }
+  .balloon { font-size: 2.4rem; }
+
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  .join-card { padding: 26px 22px; margin-top: 18px; }
+  .field { margin-bottom: 16px; }
+  .field label {
+    display: block;
+    font-size: 0.78rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+    font-weight: 700;
+  }
+  input[type="text"] {
+    width: 100%;
+    padding: 14px 16px;
+    border-radius: 12px;
+    border: 1.5px solid var(--line);
+    background: var(--bg-deep);
+    color: var(--text);
+    font-size: 1.05rem;
+    font-family: inherit;
+    outline: none;
+  }
+  input[type="text"]:focus { border-color: var(--accent); }
+  .join-card .btn { width: 100%; margin-top: 6px; }
+  .hint { color: var(--text-dim); font-size: 0.82rem; margin-top: 10px; text-align: center; }
+
+  .waiting-card { padding: 34px 22px; text-align: center; margin-top: 18px; }
+  .spinner {
+    width: 46px; height: 46px; margin: 0 auto 18px;
+    border-radius: 50%;
+    border: 4px solid var(--line);
+    border-top-color: var(--accent);
+    animation: spin 0.9s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .waiting-card h2 { margin: 0 0 8px; font-size: 1.3rem; }
+  .waiting-card p { color: var(--text-dim); margin: 0; }
+  .party-count {
+    margin-top: 18px;
+    display: inline-flex;
+    gap: 8px;
+    align-items: center;
+    background: var(--card-soft);
+    border-radius: 999px;
+    padding: 8px 16px;
+    font-family: "Fredoka", sans-serif;
+    font-weight: 600;
+  }
+
+  .progress-wrap { margin: 18px 0 22px; }
+  .progress-track {
+    height: 8px;
+    border-radius: 999px;
+    background: var(--card-soft);
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--accent), var(--gold));
+    width: 0%;
+    transition: width 0.25s ease;
+  }
+  .progress-label {
+    margin-top: 8px;
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    text-align: right;
+  }
+
+  .q-list { display: flex; flex-direction: column; gap: 14px; }
+  .q-card { padding: 18px; }
+  .q-head { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 12px; }
+  .q-num {
+    flex: none;
+    width: 32px; height: 32px;
+    border-radius: 10px;
+    background: var(--card-soft);
+    display: flex; align-items: center; justify-content: center;
+    font-family: "Fredoka", sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--gold);
+  }
+  .q-card.answered .q-num { background: rgba(110, 231, 200, 0.18); color: var(--mint); }
+  .q-text { font-size: 1.02rem; line-height: 1.4; padding-top: 4px; }
+  .q-card input[type="text"] { font-size: 1rem; padding: 12px 14px; }
+  .q-status { font-size: 0.76rem; color: var(--mint); margin-top: 6px; min-height: 1em; }
+
+  .submit-bar {
+    position: sticky;
+    bottom: 0;
+    margin-top: 22px;
+    padding: 16px 0 4px;
+    background: linear-gradient(180deg, transparent, var(--bg) 32%);
+  }
+  .submit-bar .btn { width: 100%; padding: 16px; font-size: 1.08rem; }
+
+  .done-card { padding: 34px 22px; text-align: center; margin-top: 18px; }
+  .done-card .score {
+    font-family: "Fredoka", sans-serif;
+    font-weight: 700;
+    font-size: 3.4rem;
+    margin: 6px 0 2px;
+    background: linear-gradient(135deg, var(--gold), var(--accent));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .done-card .score-of { color: var(--text-dim); margin-bottom: 18px; }
+  .done-card p.msg { color: var(--text-dim); line-height: 1.55; }
+
+  footer.foot {
+    max-width: 640px;
+    margin: 36px auto 0;
+    padding: 0 18px;
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 0.78rem;
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="who">🎉 <b id="topbarName">Ospite</b></div>
+  <div class="timer-pill tabular" id="timerPill" hidden>
+    <span class="dot"></span><span id="timerText">10:00</span>
+  </div>
+</div>
+
+<main>
+
+  <!-- SCREEN: nome -->
+  <section class="screen active" id="screen-join">
+    <div class="hero">
+      <div class="balloon">🎂</div>
+      <h1>Quanto conosci Sara?</h1>
+      <p>Inserisci il tuo nome ed entra nel gioco: quando l'host darà il via avrai <b>10 minuti</b> per rispondere a 30 domande su di lei. La classifica finale sarà proiettata in sala!</p>
+    </div>
+    <form class="card join-card" id="joinForm">
+      <div class="field">
+        <label for="nameInput">Il tuo nome</label>
+        <input type="text" id="nameInput" placeholder="Es. Marco" maxlength="30" autocomplete="off" required>
+      </div>
+      <button type="submit" class="btn" id="joinBtn">Entra nel gioco 🎈</button>
+      <p class="hint">Il nome comparirà nella classifica sul maxischermo.</p>
+    </form>
+  </section>
+
+  <!-- SCREEN: attesa -->
+  <section class="screen" id="screen-waiting">
+    <div class="card waiting-card">
+      <div class="spinner"></div>
+      <h2>Sei dentro, <span id="waitingName">—</span>!</h2>
+      <p>Aspetta che l'host avvii il gioco dal maxischermo…</p>
+      <div class="party-count">🙋 <span id="playersCount">0</span> invitati pronti</div>
+    </div>
+  </section>
+
+  <!-- SCREEN: quiz -->
+  <section class="screen" id="screen-quiz">
+    <div class="progress-wrap">
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-label"><span id="progressLabel">0</span>/30 risposte date</div>
+    </div>
+    <div class="q-list" id="qList"></div>
+    <div class="submit-bar">
+      <button class="btn gold" id="submitBtn">Invia le risposte ✅</button>
+    </div>
+  </section>
+
+  <!-- SCREEN: fine -->
+  <section class="screen" id="screen-done">
+    <div class="card done-card">
+      <div class="eyebrow">Risultato</div>
+      <div class="score tabular" id="finalScore">0</div>
+      <div class="score-of">risposte corrette su 30</div>
+      <p class="msg" id="doneMsg">Grazie per aver giocato! Guarda la classifica generale sul maxischermo per scoprire la tua posizione 🏆</p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="foot">Quiz di compleanno · fatto con 💗 per Sara</footer>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="quiz-data.js"></script>
+<script src="player.js"></script>
+</body>
+</html>
